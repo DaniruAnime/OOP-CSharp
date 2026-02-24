@@ -51,7 +51,7 @@ public class Program
                     isRunning = false;
                     break;
                 default:
-                    Console.WriteLine("Invalid input. Try again.");
+                    Console.WriteLine("Incorrect input. Try again");
                     break;
             }
         }
@@ -74,7 +74,7 @@ public class Program
         zooManager.AddAnimal(
             new Mammal(name, age, habitat, dietType, color, weight, hasFur));
 
-        Console.WriteLine("Mammal added successfully.");
+        Console.WriteLine("Mammal added successfully");
     }
 
     private static void AddBirdUI(ZooManager zooManager)
@@ -92,7 +92,7 @@ public class Program
         zooManager.AddAnimal(
             new Bird(name, age, habitat, dietType, color, weight, wingSpan));
 
-        Console.WriteLine("Bird added successfully.");
+        Console.WriteLine("Bird added successfull");
     }
 
     private static void AddFishUI(ZooManager zooManager)
@@ -110,7 +110,7 @@ public class Program
         zooManager.AddAnimal(
             new Fish(name, age, habitat, dietType, color, weight, waterType));
 
-        Console.WriteLine("Fish added successfully.");
+        Console.WriteLine("Fish added successfully");
     }
 
     private static void AddReptileUI(ZooManager zooManager)
@@ -130,7 +130,7 @@ public class Program
         zooManager.AddAnimal(
             new Reptile(name, age, habitat, dietType, color, weight, isVenomous));
 
-        Console.WriteLine("Reptile added successfully.");
+        Console.WriteLine("Reptile added successfully");
     }
 
     private static void AddAmphibianUI(ZooManager zooManager)
@@ -148,7 +148,7 @@ public class Program
         zooManager.AddAnimal(
             new Amphibian(name, age, habitat, dietType, color, weight, skinMoisture));
 
-        Console.WriteLine("Amphibian added successfully.");
+        Console.WriteLine("Amphibian added successfully");
     }
 
     private static int ReadInt(string message)
@@ -159,7 +159,7 @@ public class Program
             if (int.TryParse(Console.ReadLine(), out int result))
                 return result;
 
-            Console.WriteLine("Invalid number. Try again.");
+            Console.WriteLine("Invalid number. Try again");
         }
     }
 
@@ -171,7 +171,7 @@ public class Program
             if (double.TryParse(Console.ReadLine(), out double result))
                 return result;
 
-            Console.WriteLine("Invalid number. Try again.");
+            Console.WriteLine("Invalid number. Try again");
         }
     }
 
@@ -183,14 +183,24 @@ public class Program
             if (float.TryParse(Console.ReadLine(), out float result))
                 return result;
 
-            Console.WriteLine("Invalid number. Try again.");
+            Console.WriteLine("Invalid number. Try again");
         }
     }
 
     private static string ReadString(string message)
     {
-        Console.Write(message);
-        return Console.ReadLine();
+        while (true)
+        {
+            Console.Write(message);
+            string input = Console.ReadLine();
+
+            if (!string.IsNullOrWhiteSpace(input))
+            {
+               return input;
+            }
+
+            Console.WriteLine("Value cannot be empty"); 
+        }
     }
 }
 
