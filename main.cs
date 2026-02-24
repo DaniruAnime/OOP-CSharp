@@ -1,100 +1,349 @@
 using System;
 using System.Collections.Generic;
 
-class Programm
+public class Program
 {
-    static void Main()
+    public static void Main(string[] args)
     {
-        
+        ZooManager zooManager = ZooManager.Instance;
 
+        // Предзаполнение
+        zooManager.AddAnimal(new Mammal("Basya", 5, "Forest", "Predator", "Black", 20.5, true));
+        zooManager.AddAnimal(new Bird("Pit", 2, "Jungle", "Omnivorous", "Green", 1.2, 0.5f));
 
+        bool isRunning = true;
 
+        while (isRunning)
+        {
+            Console.WriteLine("\n--- Zoo Menu ---");
+            Console.WriteLine("1. Show all animals");
+            Console.WriteLine("2. Add mammal");
+            Console.WriteLine("3. Add bird");
+            Console.WriteLine("4. Add fish");
+            Console.WriteLine("5. Add reptile");
+            Console.WriteLine("6. Add amphibian");
+            Console.WriteLine("7. Exit");
+            Console.Write("Select option: ");
+
+            string userChoice = Console.ReadLine();
+
+            switch (userChoice)
+            {
+                case "1":
+                    zooManager.ShowAllAnimals();
+                    break;
+                case "2":
+                    AddMammalUI(zooManager);
+                    break;
+                case "3":
+                    AddBirdUI(zooManager);
+                    break;
+                case "4":
+                    AddFishUI(zooManager);
+                    break;
+                case "5":
+                    AddReptileUI(zooManager);
+                    break;
+                case "6":
+                    AddAmphibianUI(zooManager);
+                    break;
+                case "7":
+                    isRunning = false;
+                    break;
+                default:
+                    Console.WriteLine("Invalid input. Try again.");
+                    break;
+            }
+        }
+    }
+
+    private static void AddMammalUI(ZooManager zooManager)
+    {
+        Console.Write("Name: ");
+        string name = Console.ReadLine();
+
+        int age = ReadInt("Age: ");
+        string habitat = ReadString("Habitat: ");
+        string dietType = ReadString("Diet type: ");
+        string color = ReadString("Color: ");
+        double weight = ReadDouble("Weight: ");
+
+        Console.Write("Has fur? (y/n): ");
+        bool hasFur = Console.ReadLine()?.ToLower() == "y";
+
+        zooManager.AddAnimal(
+            new Mammal(name, age, habitat, dietType, color, weight, hasFur));
+
+        Console.WriteLine("Mammal added successfully.");
+    }
+
+    private static void AddBirdUI(ZooManager zooManager)
+    {
+        Console.Write("Name: ");
+        string name = Console.ReadLine();
+
+        int age = ReadInt("Age: ");
+        string habitat = ReadString("Habitat: ");
+        string dietType = ReadString("Diet type: ");
+        string color = ReadString("Color: ");
+        double weight = ReadDouble("Weight: ");
+        float wingSpan = ReadFloat("Wing span: ");
+
+        zooManager.AddAnimal(
+            new Bird(name, age, habitat, dietType, color, weight, wingSpan));
+
+        Console.WriteLine("Bird added successfully.");
+    }
+
+    private static void AddFishUI(ZooManager zooManager)
+    {
+        Console.Write("Name: ");
+        string name = Console.ReadLine();
+
+        int age = ReadInt("Age: ");
+        string habitat = ReadString("Habitat: ");
+        string dietType = ReadString("Diet type: ");
+        string color = ReadString("Color: ");
+        double weight = ReadDouble("Weight: ");
+        string waterType = ReadString("Water type (Fresh/Sea): ");
+
+        zooManager.AddAnimal(
+            new Fish(name, age, habitat, dietType, color, weight, waterType));
+
+        Console.WriteLine("Fish added successfully.");
+    }
+
+    private static void AddReptileUI(ZooManager zooManager)
+    {
+        Console.Write("Name: ");
+        string name = Console.ReadLine();
+
+        int age = ReadInt("Age: ");
+        string habitat = ReadString("Habitat: ");
+        string dietType = ReadString("Diet type: ");
+        string color = ReadString("Color: ");
+        double weight = ReadDouble("Weight: ");
+
+        Console.Write("Is venomous? (y/n): ");
+        bool isVenomous = Console.ReadLine()?.ToLower() == "y";
+
+        zooManager.AddAnimal(
+            new Reptile(name, age, habitat, dietType, color, weight, isVenomous));
+
+        Console.WriteLine("Reptile added successfully.");
+    }
+
+    private static void AddAmphibianUI(ZooManager zooManager)
+    {
+        Console.Write("Name: ");
+        string name = Console.ReadLine();
+
+        int age = ReadInt("Age: ");
+        string habitat = ReadString("Habitat: ");
+        string dietType = ReadString("Diet type: ");
+        string color = ReadString("Color: ");
+        double weight = ReadDouble("Weight: ");
+        string skinMoisture = ReadString("Skin moisture level: ");
+
+        zooManager.AddAnimal(
+            new Amphibian(name, age, habitat, dietType, color, weight, skinMoisture));
+
+        Console.WriteLine("Amphibian added successfully.");
+    }
+
+    private static int ReadInt(string message)
+    {
+        while (true)
+        {
+            Console.Write(message);
+            if (int.TryParse(Console.ReadLine(), out int result))
+                return result;
+
+            Console.WriteLine("Invalid number. Try again.");
+        }
+    }
+
+    private static double ReadDouble(string message)
+    {
+        while (true)
+        {
+            Console.Write(message);
+            if (double.TryParse(Console.ReadLine(), out double result))
+                return result;
+
+            Console.WriteLine("Invalid number. Try again.");
+        }
+    }
+
+    private static float ReadFloat(string message)
+    {
+        while (true)
+        {
+            Console.Write(message);
+            if (float.TryParse(Console.ReadLine(), out float result))
+                return result;
+
+            Console.WriteLine("Invalid number. Try again.");
+        }
+    }
+
+    private static string ReadString(string message)
+    {
+        Console.Write(message);
+        return Console.ReadLine();
     }
 }
 
 public abstract class Animal
 {
-    public string Name {get; set;}
-    public int Age {get; set;}
-    public string Habitat {get; set;}
-    public string DietType {get; set;}
-    public string Skin {get; set;}
-    public int Weight {get; set;}
+    public string Name { get; private set; }
+    public int Age { get; private set; }
+    public string Habitat { get; private set; }
+    public string DietType { get; private set; }
+    public string Color { get; private set; }
+    public double Weight { get; private set; }
 
-    protected Animal(string name, int age, string habitat, string dietType, string skin, int weight)
+    protected Animal(string name, int age, string habitat,
+                     string dietType, string color, double weight)
     {
         Name = name;
         Age = age;
         Habitat = habitat;
         DietType = dietType;
-        Skin = skin;
+        Color = color;
         Weight = weight;
     }
 
     public virtual string GetInfo()
     {
-        return $"Name: {Name}, Age: {Age}, Habitat: {Habitat}, Diet type: {DietType}, Skin: {Skin}, Weight: {Weight}";
+        return $"Name: {Name}, Age: {Age}, Habitat: {Habitat}, " +
+               $"Diet: {DietType}, Color: {Color}, Weight: {Weight}";
     }
 }
 
 public class Mammal : Animal
 {
-    public bool HasFur {get; set;}
+    public bool HasFur { get; private set; }
 
-    public Mammal(string name, int age, string habitat, string dietType, string skin, int weight, bool hasFur) : base(name, age, habitat, dietType, skin, weight) => HasFur = hasFur;
+    public Mammal(string name, int age, string habitat,
+                  string dietType, string color, double weight,
+                  bool hasFur)
+        : base(name, age, habitat, dietType, color, weight)
+    {
+        HasFur = hasFur;
+    }
 
     public override string GetInfo()
     {
-        return base.GetInfo() + $", Type: mammal, HasFur: {(HasFur ? "Yes" : "No")}";;
+        return base.GetInfo() +
+               $", Type: Mammal, Has fur: {(HasFur ? "Yes" : "No")}";
     }
 }
 
 public class Bird : Animal
 {
-    public float WingSpan {get; set;}
+    public float WingSpan { get; private set; }
 
-    public Bird(string name, int age, string habitat, string dietType, string skin, int weight, float wingSpan) : base(name, age, habitat, dietType, skin, weight) => WingSpan = wingSpan;
+    public Bird(string name, int age, string habitat,
+                string dietType, string color, double weight,
+                float wingSpan)
+        : base(name, age, habitat, dietType, color, weight)
+    {
+        WingSpan = wingSpan;
+    }
 
     public override string GetInfo()
     {
-        return base.GetInfo() + $", Type: bird, Wing span: {WingSpan}";
+        return base.GetInfo() +
+               $", Type: Bird, Wing span: {WingSpan}";
     }
 }
 
 public class Fish : Animal
 {
-    public string WaterType {get; set;}
+    public string WaterType { get; private set; }
 
-    public Fish(string name, int age, string habitat, string dietType, string skin, int weight, string waterType) : base(name, age, habitat, dietType, skin, weight) => WaterType = waterType;
+    public Fish(string name, int age, string habitat,
+                string dietType, string color, double weight,
+                string waterType)
+        : base(name, age, habitat, dietType, color, weight)
+    {
+        WaterType = waterType;
+    }
 
     public override string GetInfo()
     {
-        return base.GetInfo() + $", Type: fish, Water: {WaterType}";
+        return base.GetInfo() +
+               $", Type: Fish, Water type: {WaterType}";
     }
 }
 
 public class Reptile : Animal
 {
-    public bool IsVenomous {get; set;}
+    public bool IsVenomous { get; private set; }
 
-    public Reptile(string name, int age, string habitat, string dietType, string skin, int weight, bool isVenomous) : base(name, age, habitat, dietType, skin, weight) => IsVenomous = isVenomous;
+    public Reptile(string name, int age, string habitat,
+                   string dietType, string color, double weight,
+                   bool isVenomous)
+        : base(name, age, habitat, dietType, color, weight)
+    {
+        IsVenomous = isVenomous;
+    }
 
     public override string GetInfo()
     {
-        return base.GetInfo() + $", Type: reptile, Is venomous: {(IsVenomous ? "Yes" : "No")}";
+        return base.GetInfo() +
+               $", Type: Reptile, Venomous: {(IsVenomous ? "Yes" : "No")}";
     }
 }
 
 public class Amphibian : Animal
 {
-    public string SkinMoisture {get; set;}
+    public string SkinMoisture { get; private set; }
 
-    public Amphibian(string name, int age, string habitat, string dietType, string skin, int weight, string skinMoisture) : base(name, age, habitat, dietType, skin, weight) => SkinMoisture = skinMoisture;
+    public Amphibian(string name, int age, string habitat,
+                     string dietType, string color, double weight,
+                     string skinMoisture)
+        : base(name, age, habitat, dietType, color, weight)
+    {
+        SkinMoisture = skinMoisture;
+    }
 
     public override string GetInfo()
     {
-        return base.GetInfo() + $", Type: amphibian, Skin moisture: {IsVenomous}";
+        return base.GetInfo() +
+               $", Type: Amphibian, Skin moisture: {SkinMoisture}";
     }
-
 }
 
+public sealed class ZooManager
+{
+    private static readonly ZooManager instance = new ZooManager();
+    private readonly List<Animal> animals;
+
+    private ZooManager()
+    {
+        animals = new List<Animal>();
+    }
+
+    public static ZooManager Instance => instance;
+
+    public void AddAnimal(Animal animal)
+    {
+        animals.Add(animal);
+    }
+
+    public void ShowAllAnimals()
+    {
+        if (animals.Count == 0)
+        {
+            Console.WriteLine("Zoo is empty.");
+            return;
+        }
+
+        for (int index = 0; index < animals.Count; index++)
+        {
+            Console.WriteLine($"{index + 1}. {animals[index].GetInfo()}");
+        }
+    }
+}
