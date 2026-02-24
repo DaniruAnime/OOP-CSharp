@@ -1,13 +1,15 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 public class Program
 {
     public static void Main(string[] args)
     {
+        // Instance гарантирует, что программа работает с единственным списком
         ZooManager zooManager = ZooManager.Instance;
 
-        // Предзаполнение
+        // Предзаполнение животных для демонстрации
         zooManager.AddAnimal(new Mammal("Basya", 5, "Forest", "Predator", "Black", 20.5, true));
         zooManager.AddAnimal(new Bird("Pit", 2, "Jungle", "Omnivorous", "Green", 1.2, 0.5f));
 
@@ -67,9 +69,7 @@ public class Program
         string dietType = ReadString("Diet type: ");
         string color = ReadString("Color: ");
         double weight = ReadDouble("Weight: ");
-
-        Console.Write("Has fur? (y/n): ");
-        bool hasFur = Console.ReadLine()?.ToLower() == "y";
+        bool hasFur = ReadBool("Has fur? (y/n): ");
 
         zooManager.AddAnimal(
             new Mammal(name, age, habitat, dietType, color, weight, hasFur));
@@ -92,7 +92,7 @@ public class Program
         zooManager.AddAnimal(
             new Bird(name, age, habitat, dietType, color, weight, wingSpan));
 
-        Console.WriteLine("Bird added successfull");
+        Console.WriteLine("Bird added successfully");
     }
 
     private static void AddFishUI(ZooManager zooManager)
@@ -123,9 +123,7 @@ public class Program
         string dietType = ReadString("Diet type: ");
         string color = ReadString("Color: ");
         double weight = ReadDouble("Weight: ");
-
-        Console.Write("Is venomous? (y/n): ");
-        bool isVenomous = Console.ReadLine()?.ToLower() == "y";
+        bool isVenomous = ReadBool("Is venomous? (y/n): ");
 
         zooManager.AddAnimal(
             new Reptile(name, age, habitat, dietType, color, weight, isVenomous));
@@ -156,8 +154,13 @@ public class Program
         while (true)
         {
             Console.Write(message);
-            if (int.TryParse(Console.ReadLine(), out int result))
+            string? input = Console.ReadLine();
+
+            // Проверка на корректное и неотрицательное число
+            if (int.TryParse(input, out int result) && result >= 0)
+            {
                 return result;
+            }
 
             Console.WriteLine("Invalid number. Try again");
         }
@@ -168,9 +171,20 @@ public class Program
         while (true)
         {
             Console.Write(message);
-            if (double.TryParse(Console.ReadLine(), out double result))
+            string? input = Console.ReadLine();
+            
+            // InvariantCulture позволяет вводить и точку, и запятую как разделитель
+            if (double.TryParse(input, NumberStyles.Any, 
+                CultureInfo.InvariantCulture, out double result) && result >= 0)
+            {
                 return result;
+            }
 
+            if (double.TryParse(input, out result) && result >= 0)
+            {
+                return result;
+            }
+            
             Console.WriteLine("Invalid number. Try again");
         }
     }
@@ -180,8 +194,12 @@ public class Program
         while (true)
         {
             Console.Write(message);
-            if (float.TryParse(Console.ReadLine(), out float result))
+            string? input = Console.ReadLine();
+
+            if (float.TryParse(input, out float result) && result >= 0)
+            {
                 return result;
+            }
 
             Console.WriteLine("Invalid number. Try again");
         }
@@ -192,20 +210,46 @@ public class Program
         while (true)
         {
             Console.Write(message);
-            string input = Console.ReadLine();
-
+            string? input = Console.ReadLine();
+            
+            // Проверка на пустой ввод
             if (!string.IsNullOrWhiteSpace(input))
             {
-               return input;
+               return input.Trim();
             }
 
             Console.WriteLine("Value cannot be empty"); 
+        }
+    }
+
+    private static bool ReadBool(string message)
+    {
+        while (true)
+        {
+            Console.Write(message);
+            string? input = Console.ReadLine()?.Trim().ToLower();
+
+            if (input == "y" || input == "yes")
+            {
+                return true;
+            }
+                
+            if (input == "n" || input == "no")
+            {
+                return false;
+            }
+
+            Console.WriteLine("Please enter y/n.");
         }
     }
 }
 
 public abstract class Animal
 {
+    /*
+    private set нужен чтобы свойства можно было читать только снаружи,
+    но менять только внутри конструктора
+    */
     public string Name { get; private set; }
     public int Age { get; private set; }
     public string Habitat { get; private set; }
@@ -224,6 +268,7 @@ public abstract class Animal
         Weight = weight;
     }
 
+    // virtual разрешает наследникам переопределять этот метод
     public virtual string GetInfo()
     {
         return $"Name: {Name}, Age: {Age}, Habitat: {Habitat}, " +
