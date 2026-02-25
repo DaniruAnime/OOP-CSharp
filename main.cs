@@ -396,7 +396,7 @@ public sealed class ZooManager
             return;
         }
 
-        for (int index = 0; index < animals.Count; index++)
+        for (int index = 0; index < animals.Count; ++index)
         {
             Console.WriteLine($"{index + 1}. {animals[index].GetInfo()}");
         }
