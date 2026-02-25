@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 
 public class Program
 {
@@ -71,10 +72,17 @@ public class Program
         double weight = ReadDouble("Weight: ");
         bool hasFur = ReadBool("Has fur? (y/n): ");
 
-        zooManager.AddAnimal(
+        bool isAdded = zooManager.AddAnimal(
             new Mammal(name, age, habitat, dietType, color, weight, hasFur));
 
-        Console.WriteLine("Mammal added successfully");
+        if (isAdded)
+        {
+            Console.WriteLine("Mammal added successfully");
+        }
+        else
+        {
+            Console.WriteLine("Such an animal already exists");
+        }
     }
 
     private static void AddBirdUI(ZooManager zooManager)
@@ -89,10 +97,17 @@ public class Program
         double weight = ReadDouble("Weight: ");
         float wingSpan = ReadFloat("Wing span: ");
 
-        zooManager.AddAnimal(
+        bool isAdded = zooManager.AddAnimal(
             new Bird(name, age, habitat, dietType, color, weight, wingSpan));
 
-        Console.WriteLine("Bird added successfully");
+        if (isAdded)
+        {
+            Console.WriteLine("Bird added successfully");
+        }
+        else
+        {
+            Console.WriteLine("Such an animal already exists");
+        }
     }
 
     private static void AddFishUI(ZooManager zooManager)
@@ -107,10 +122,17 @@ public class Program
         double weight = ReadDouble("Weight: ");
         string waterType = ReadString("Water type (Fresh/Sea): ");
 
-        zooManager.AddAnimal(
+        bool isAdded = zooManager.AddAnimal(
             new Fish(name, age, habitat, dietType, color, weight, waterType));
 
-        Console.WriteLine("Fish added successfully");
+        if (isAdded)
+        {
+            Console.WriteLine("Fish added successfully");
+        }
+        else
+        {
+            Console.WriteLine("Such an animal already exists");
+        }
     }
 
     private static void AddReptileUI(ZooManager zooManager)
@@ -125,10 +147,17 @@ public class Program
         double weight = ReadDouble("Weight: ");
         bool isVenomous = ReadBool("Is venomous? (y/n): ");
 
-        zooManager.AddAnimal(
+        bool isAdded = zooManager.AddAnimal(
             new Reptile(name, age, habitat, dietType, color, weight, isVenomous));
 
-        Console.WriteLine("Reptile added successfully");
+        if (isAdded)
+        {
+            Console.WriteLine("Reptile added successfully");
+        }
+        else
+        {
+            Console.WriteLine("Such an animal already exists");
+        }
     }
 
     private static void AddAmphibianUI(ZooManager zooManager)
@@ -143,10 +172,17 @@ public class Program
         double weight = ReadDouble("Weight: ");
         string skinMoisture = ReadString("Skin moisture level: ");
 
-        zooManager.AddAnimal(
+        bool isAdded = zooManager.AddAnimal(
             new Amphibian(name, age, habitat, dietType, color, weight, skinMoisture));
 
-        Console.WriteLine("Amphibian added successfully");
+        if (isAdded)
+        {
+            Console.WriteLine("Amphibian added successfully");
+        }
+        else
+        {
+            Console.WriteLine("Such an animal already exists");
+        }
     }
 
     private static int ReadInt(string message)
@@ -211,14 +247,23 @@ public class Program
         {
             Console.Write(message);
             string? input = Console.ReadLine();
-            
-            // Проверка на пустой ввод
+
             if (!string.IsNullOrWhiteSpace(input))
             {
-               return input.Trim();
-            }
+                input = input.Trim();
 
-            Console.WriteLine("Value cannot be empty"); 
+                // Проверка что строка не содержит цифр
+                if (!input.Any(char.IsDigit))
+                {
+                    return input;
+                }
+
+                Console.WriteLine("Value cannot contain numbers");
+            }
+            else
+            {
+                Console.WriteLine("Value cannot be empty");
+            }
         }
     }
 
@@ -239,7 +284,7 @@ public class Program
                 return false;
             }
 
-            Console.WriteLine("Please enter y/n.");
+            Console.WriteLine("Please enter y/n");
         }
     }
 }
@@ -383,16 +428,22 @@ public sealed class ZooManager
 
     public static ZooManager Instance => instance;
 
-    public void AddAnimal(Animal animal)
+    public bool AddAnimal(Animal animal)
     {
+        if (AnimalExists(animal))
+        {
+            return false;
+        }
+
         animals.Add(animal);
+        return true;
     }
 
     public void ShowAllAnimals()
     {
         if (animals.Count == 0)
         {
-            Console.WriteLine("Zoo is empty.");
+            Console.WriteLine("Zoo is empty");
             return;
         }
 
@@ -400,5 +451,15 @@ public sealed class ZooManager
         {
             Console.WriteLine($"{index + 1}. {animals[index].GetInfo()}");
         }
+    }
+
+    private bool AnimalExists(Animal newAnimal)
+    {
+        return animals.Any(animal =>
+            animal.GetType() == newAnimal.GetType() &&
+            animal.Name.Equals(newAnimal.Name, StringComparison.OrdinalIgnoreCase) &&
+            animal.Age == newAnimal.Age &&
+            animal.Habitat.Equals(newAnimal.Habitat, StringComparison.OrdinalIgnoreCase)
+        );
     }
 }
