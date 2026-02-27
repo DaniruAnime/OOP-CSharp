@@ -18,39 +18,48 @@ public class Program
 
         while (isRunning)
         {
-            Console.WriteLine("\n--- Zoo Menu ---");
-            Console.WriteLine("1. Show all animals");
-            Console.WriteLine("2. Add mammal");
-            Console.WriteLine("3. Add bird");
-            Console.WriteLine("4. Add fish");
-            Console.WriteLine("5. Add reptile");
-            Console.WriteLine("6. Add amphibian");
-            Console.WriteLine("7. Exit");
-            Console.Write("Select option: ");
+            Console.Write("""
+                --- Zoo Menu ---
+                1. Show all animals
+                2. Add mammal
+                3. Add bird
+                4. Add fish
+                5. Add reptile
+                6. Add amphibian
+                7. Exit
+                Select option: 
+                """);
 
-            string userChoice = Console.ReadLine();
-
-            switch (userChoice)
+            string input = Console.ReadLine();
+            
+            if (!Enum.TryParse(input, ignoreCase: true, out menuOption result) ||
+                !Enum.IsDefined(typeof(menuOption), result))
             {
-                case "1":
+                Console.WriteLine("Incorrect input. Try again");
+                continue;
+            }
+
+            switch (result)
+            {
+                case menuOption.ShowAllAnimals:
                     zooManager.ShowAllAnimals();
                     break;
-                case "2":
+                case menuOption.AddMammal:
                     AddMammalUI(zooManager);
                     break;
-                case "3":
+                case menuOption.AddBird:
                     AddBirdUI(zooManager);
                     break;
-                case "4":
+                case menuOption.AddFish:
                     AddFishUI(zooManager);
                     break;
-                case "5":
+                case menuOption.AddReptile:
                     AddReptileUI(zooManager);
                     break;
-                case "6":
+                case menuOption.AddAmphibian:
                     AddAmphibianUI(zooManager);
                     break;
-                case "7":
+                case menuOption.Exit:
                     isRunning = false;
                     break;
                 default:
@@ -289,6 +298,17 @@ public class Program
     }
 }
 
+public enum menuOption
+{
+    ShowAllAnimals = 1,
+    AddMammal,
+    AddBird,
+    AddFish,
+    AddReptile,
+    AddAmphibian,
+    Exit
+}
+
 public abstract class Animal
 {
     /*
@@ -313,7 +333,6 @@ public abstract class Animal
         Weight = weight;
     }
 
-    // virtual разрешает наследникам переопределять этот метод
     public virtual string GetInfo()
     {
         return $"Name: {Name}, Age: {Age}, Habitat: {Habitat}, " +
@@ -426,7 +445,13 @@ public sealed class ZooManager
         animals = new List<Animal>();
     }
 
-    public static ZooManager Instance => instance;
+    public static ZooManager Instance
+    {
+        get
+        {
+            return instance;
+        }
+    }
 
     public bool AddAnimal(Animal animal)
     {
@@ -455,11 +480,16 @@ public sealed class ZooManager
 
     private bool AnimalExists(Animal newAnimal)
     {
-        return animals.Any(animal =>
-            animal.GetType() == newAnimal.GetType() &&
-            animal.Name.Equals(newAnimal.Name, StringComparison.OrdinalIgnoreCase) &&
-            animal.Age == newAnimal.Age &&
-            animal.Habitat.Equals(newAnimal.Habitat, StringComparison.OrdinalIgnoreCase)
-        );
+        foreach (Animal animal in animals)
+        {
+            if (animal.GetType() == newAnimal.GetType() &&
+                animal.Name.Equals(newAnimal.Name, StringComparison.OrdinalIgnoreCase) &&
+                animal.Age == newAnimal.Age &&
+                animal.Habitat.Equals(newAnimal.Habitat, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }
